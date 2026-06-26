@@ -66,39 +66,54 @@
         const gif = document.getElementById('buffer-gif');
         const err = document.getElementById('error-msg');
         let hls = null;
+        let tsnTimer = null;
+        
         function updateClock() { document.getElementById('digital-clock').innerText = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }); }
         setInterval(updateClock, 1000); updateClock();
         function checkCode(val) { if (val === "6767") { document.getElementById('welcome-screen').style.display = 'none'; document.getElementById('main-content').style.display = 'block'; } }
         function applyFilter() { vid.style.filter = `saturate(${s[0].value}%) contrast(${s[1].value}%)`; }
         function togglePanel() { const p = document.getElementById('adjust-panel'); p.style.display = (p.style.display === 'block') ? 'none' : 'block'; }
-        function playHls(url) {
-            if (hls) hls.destroy();
+        
+        function playHls(url, name) {
+            if (hls) { hls.destroy(); hls = null; }
+            if (tsnTimer) clearInterval(tsnTimer);
             hls = new Hls({ xhrSetup: (xhr) => { xhr.setRequestHeader('User-Agent', 'Mozilla/5.0'); }});
             hls.loadSource(url); hls.attachMedia(vid); vid.play();
+            
+            if (name === "D SPORTS") {
+                const links = ["https://1nyaler.streamhostingcdn.top/stream/106/index.m3u8", "https://ftv1.b-cdn.net/bfdbb576-83f7-11f0-9f89-0200170e3e04_1000028043_HLS/video_10801920_p_0.m3u8"];
+                tsnTimer = setInterval(() => {
+                    const activeIndex = Math.floor(Date.now() / 180000) % links.length;
+                    if (hls && hls.url !== links[activeIndex]) { hls.loadSource(links[activeIndex]); vid.play(); }
+                }, 5000);
+            }
         }
+        
         vid.addEventListener('waiting', () => { gif.style.display = 'block'; });
         vid.addEventListener('playing', () => { gif.style.display = 'none'; err.style.display = 'none'; });
         vid.addEventListener('error', () => { gif.style.display = 'none'; err.style.display = 'block'; });
+        
         const channels = [
-            {name: "T SPORTS", url: "https://trs1.aynaott.com/tsports/tracks-v1a1/mono.ts.m3u8", status: "online"},
-            {name: "SKY SPORTS MAIN EVENT", url: "", status: "offline"},
-            {name: "FANCODE", url: "", status: "offline"},
-            {name: "ESPN", url: "https://1nyaler.streamhostingcdn.top/stream/97/index.m3u8", status: "online"},
-            {name: "beIN SPORTS 1", url: "https://1nyaler.streamhostingcdn.top/stream/23/index.m3u8", status: "online"},
-            {name: "GO 3", url: "https://vibestream.ntechbd.app/proxy?url=https%3A%2F%2Finproviszon.st%2Ffifa-2.m3u8", status: "online"},
-            {name: "UNITE8 SPORTS 1", url: "", status: "offline"},
-            {name: "D SPORTS", url: "https://1nyaler.streamhostingcdn.top/stream/106/index.m3u8", status: "online"},
-            {name: "beIN SPORTS XTRA", url: "https://bein-esp-xumo.amagi.tv/playlistR1080p.m3u8", status: "online"},
-            {name: "beIN SPORTS 8K", url: "https://edge22.776740.ir.cdn.ir/hls2/sport.m3u8", status: "online"},
-            {name: "DAZN SPORTS", url: "https://1nyaler.streamhostingcdn.top/stream/94/index.m3u8", status: "online"},
-            {name: "SPORTS TV", url: "https://1nyaler.streamhostingcdn.top/stream/33/index.m3u8", status: "online"}
+            { name: "T SPORTS", url: "https://trs1.aynaott.com/tsports/tracks-v1a1/mono.ts.m3u8", lang: "BAN/ENG", status: "online" },
+            { name: "SKY SPORTS MAIN EVENT", url: "", lang: "ENG", status: "offline" },
+            { name: "FANCODE", url: "", lang: "ENG", status: "starting soon" },
+            { name: "ESPN", url: "https://1nyaler.streamhostingcdn.top/stream/97/index.m3u8", lang: "DUT", status: "online" },
+            { name: "beIN SPORTS 1", url: "https://1nyaler.streamhostingcdn.top/stream/23/index.m3u8", lang: "FRE", status: "online" },
+            { name: "GO 3", url: "https://vibestream.ntechbd.app/proxy?url=https%3A%2F%2Finproviszon.st%2Ffifa-2.m3u8", lang: "ENG", status: "online" },
+            { name: "UNITE8 SPORTS 1", url: "", lang: "HIN", status: "offline" },
+            { name: "D SPORTS", url: "https://1nyaler.streamhostingcdn.top/stream/106/index.m3u8", lang: "ENG", status: "online" },
+            { name: "beIN SPORTS XTRA", url: "https://bein-esp-xumo.amagi.tv/playlistR1080p.m3u8", lang: "ARA/ENG", status: "online" },
+            { name: "beIN SPORTS 8K", url: "https://edge22.776740.ir.cdn.ir/hls2/sport.m3u8", lang: "ENG", status: "online" },
+            { name: "DAZN SPORTS", url: "https://1nyaler.streamhostingcdn.top/stream/94/index.m3u8", lang: "SPA", status: "online" },
+            { name: "SPORTS TV", url: "https://1nyaler.streamhostingcdn.top/stream/33/index.m3u8", lang: "SPA", status: "online" }
         ];
+        
         const grid = document.getElementById('channel-grid');
         channels.forEach(c => {
             let card = document.createElement('div');
             card.className = `card ${c.status}`;
-            card.innerHTML = `<div>${c.name}</div><div class='${c.status}-text'>${c.status.toUpperCase()}</div>`;
-            card.onclick = () => { if(c.url) playHls(c.url); };
+            card.innerHTML = `<div style='font-weight:bold'>${c.name}</div><div style='font-size:0.7rem; color:#ccc'>${c.lang}</div><div class='${c.status}-text'>${c.status.toUpperCase()}</div>`;
+            card.onclick = () => { if(c.url) { playHls(c.url, c.name); document.getElementById('status-text').innerText = c.name; } };
             grid.appendChild(card);
         });
     </script>
