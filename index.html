@@ -8,7 +8,6 @@
     <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="icon" type="image/webp" href="https://i.ibb.co.com/0yFrNTmv/UNF-DESIGN-20260123-224445-0001.webp">
     <script src="https://cdn.jsdelivr.net/npm/hls.js@1.4.10/dist/hls.min.js"></script>
-    <script src="https://cdn.dashjs.org/latest/dash.all.min.js"></script>
     <style>
         /* ===== RESET ===== */
         * { margin:0; padding:0; box-sizing:border-box; }
@@ -390,21 +389,11 @@
                     }
                 }
             });
-// ... end of your playHls code ...
         } else if (vid.canPlayType('application/vnd.apple.mpegurl')) {
             vid.src = url;
             vid.play();
         }
-    } // <--- ADD THIS CLOSING BRACE HERE TO FIX THE BREAK
 
-    function playDash(url, name) {
-        const vid = document.getElementById('player');
-        const player = dashjs.MediaPlayer().create();
-        player.initialize(vid, url, true);
-        document.getElementById('status-text').innerText = name;
-    }
-
-        
         // Special D SPORTS rotation
         if (name === "D SPORTS") {
             const links = [
@@ -434,7 +423,7 @@
         { name: "UNITE8 SPORTS 1", url: "", lang: "HIN", status: "offline" },
         { name: "D SPORTS", url: "https://1nyaler.streamhostingcdn.top/stream/106/index.m3u8", lang: "ENG", status: "online" },
         { name: "TSN", url: "https://inproviszon.st/tsn4k.m3u8", lang: "ENG", status: "online" },
-        { name: "R Ok", url: "https://otte.cache.aiv-cdn.net/bom-nitro/live/dash/enc/w0rehjjrwe/out/v1/69a2a7041395406b970598f61680e7cf/cenc.mpd", lang: "ENG", status: "online" },
+        { name: "SKY SPORT 3", url: "https://lb6.strmd.st/secure/GZdcepRSizruvhZTCppnaXIncDiggOVK/rtmp/stream/l-Q6NZL6t0MhLA6NKuGSreGQq6EotbJdT6aibf67xjMCsy_OGRxX9apmlAbCL46SJgnB1a67L8aClgrOQLMV_s7CFb3ayVXI/1/playlist.m3u8", lang: "ENG", status: "online" },
         { name: "DAZN SPORTS", url: "https://1nyaler.streamhostingcdn.top/stream/94/index.m3u8", lang: "SPA", status: "online" },
         { name: "SPORT TV", url: "https://1nyaler.streamhostingcdn.top/stream/33/index.m3u8", lang: "SPA", status: "online" }
     ];
@@ -452,14 +441,12 @@
             if (c.status === "online" && c.url) {
                 document.querySelectorAll('.card').forEach(el => el.classList.remove('active'));
                 card.classList.add('active');
-            document.getElementById('status-text').innerText = c.name;
-            
-            // Check for DASH format, otherwise use HLS
-            if (c.url.toLowerCase().endsWith('.mpd')) {
-                playDash(c.url, c.name);
-            } else {
+                document.getElementById('status-text').innerText = c.name;
                 playHls(c.url, c.name);
             }
+        };
+        grid.appendChild(card);
+    });
 
     // ===== VIDEO EVENTS =====
     const gif = document.getElementById('buffer-gif');
