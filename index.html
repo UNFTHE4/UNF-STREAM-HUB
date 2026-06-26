@@ -366,14 +366,9 @@
 
         if (window.Hls && Hls.isSupported()) {
             hls = new Hls({
-                // Buffering Optimization
-                liveSyncDurationCount: 3,    // Sync closer to live edge
-                maxBufferLength: 20,         // Keep buffer small (20 seconds)
-                maxMaxBufferLength: 30,      // Max buffer size
-                backBufferLength: 0,         // Discard past segments immediately
-                xhrSetup: (xhr) => {
-                    xhr.setRequestHeader('User-Agent', 'Mozilla/5.0');
-                }
+             maxBufferLength: 60, // Increase this from 20 to 60 (holds 1 minute of video)
+             backBufferLength: 10, // Keeps a small bit of what you just watched
+             xhrSetup: (xhr) => { xhr.setRequestHeader('User-Agent', 'Mozilla/5.0'); }
             });
             hls.loadSource(url);
             hls.attachMedia(vid);
