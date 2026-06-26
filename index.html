@@ -7,141 +7,107 @@
     <link href='https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css' rel='stylesheet'/>
     <script src='https://cdn.jsdelivr.net/npm/hls.js@1.4.10/dist/hls.min.js'></script>
     <style>
-        /* Base Styles */
         body { margin:0; padding:0; background:#0b0c10; font-family:sans-serif; color:#fff; overflow-x: hidden; }
         :root { --mint: #00ff66; --panel: #11141a; --red: #ff4757; }
-        
-        /* Fullscreen Lockdown */
-        :fullscreen { background: #000 !important; }
-        :fullscreen #player { width: 100vw !important; height: 100vh !important; object-fit: contain !important; background: #000 !important; }
-        :fullscreen #status-overlay { position: absolute !important; top: 50% !important; z-index: 10000 !important; }
 
-        /* Welcome Screen */
-        #welcome-screen { position: fixed; top:0; left:0; width:100%; height:100%; background: url('https://i.ibb.co.com/vvCwyJG5/WC-1.png') center/cover; z-index: 9999; display: flex; justify-content: center; align-items: center; }
-        .welcome-box { background: linear-gradient(135deg, #000, #00ff6611); padding: 40px; border: 2px solid var(--mint); text-align: center; border-radius: 20px; }
-        .logo-img { width: 150px; height: auto; margin-bottom: 20px; }
-        #passcode-input { background:transparent; border:2px solid var(--mint); color:var(--mint); padding:10px; font-size:1.5rem; text-align:center; width:120px; letter-spacing:8px; margin-top:20px; border-radius:8px; }
-        
-        /* Main Layout */
-        .container { width: 100%; margin: 0 auto; display: none; }
+        /* Video Player & Theme */
         #video-header { background:#000; position:relative; }
-        #digital-clock { position: absolute; top: 15px; left: 1200px; white-space: nowrap; background: rgba(0, 0, 0, 0.7); color: var(--mint); font-family: monospace; font-size: 18px; padding: 8px 12px; border-radius: 6px; border: 1px solid #333; z-index: 100; pointer-events: none; }
-        @media (max-width: 899px) { #digital-clock { display: none; } }
-        
-        .corner-logo { position: absolute; top: 10px; left: 10px; width: 40px; z-index: 10; }
-        #player { width:100%; aspect-ratio:16/9; background:#000; }
-        .controls { display:flex; justify-content:space-between; align-items:center; padding:15px; }
+        #player { width: 100%; aspect-ratio: 16/9; background:#000; }
+        .controls { display: flex; justify-content:space-between; align-items:center; padding: 15px; color: var(--mint); }
+        .controls i { cursor: pointer; font-size: 1.2rem; }
         
         /* Grid & Cards */
-        .grid { display:grid; gap:10px; padding:15px; }
+        .grid { display:grid; gap: 10px; padding: 15px; }
         .card { background:var(--panel); padding:15px; border-radius:8px; border:2px solid transparent; cursor:pointer; color: #fff; }
         .card.active { border-color: var(--mint); }
         .card.offline { opacity: 0.5; filter: grayscale(1); }
         .online-text { color: var(--mint); font-weight:bold; }
         .offline-text { color: var(--red); font-weight:bold; }
-        
+
+        /* Responsive Layout */
         @media (max-width: 899px) { .grid { grid-template-columns: 1fr 1fr; } }
-        @media (min-width: 900px) { .container { max-width: 1000px; } .grid { grid-template-columns: repeat(3, 1fr) !important; } }
-        
-        #adjust-panel { position:fixed; bottom:10px; left:10px; right:10px; max-width:500px; margin: 0 auto; background:#111; padding:20px; border-radius:12px; border:1px solid #333; display:none; z-index:1000; }
+        @media (min-width: 900px) { .container { max-width: 1000px; margin: 0 auto; } .grid { grid-template-columns: repeat(3, 1fr) !important; } }
+
+        /* Overlays & Adjustments */
+        #status-overlay { position:absolute; top:30%; left:50%; transform:translate(-50%,-50%); z-index:99; pointer-events:none; text-align:center; }
+        #error-msg { display:none; color:white; background:rgba(0,0,0,0.8); padding:10px; }
+        #adjust-panel { position:fixed; bottom:10px; left:10px; right:10px; max-width:500px; margin: 0 auto; background:#111; padding:20px; border-radius:12px; border:1px solid var(--mint); display:none; z-index:1000; }
+        #digital-clock { position: absolute; top: 15px; right: 20px; color: var(--mint); font-family: monospace; z-index: 100; }
     </style>
 </head>
 <body>
-    <div id='welcome-screen'>
-        <div class='welcome-box'>
-            <img alt='Logo' class='logo-img' src='https://i.ibb.co.com/Df6zYZTZ/Adobe-Express-file.png'/>
-            <div style='font-size:1.5rem; margin-top: 10px;'>UNF STREAM HUB</div>
-            <input id='passcode-input' maxlength='4' oninput='checkCode(this.value)' placeholder='••••' type='password'/>
+
+<div class='container' id='main-content' style='display:block;'>
+    <div id='video-header'>
+        <div id='status-overlay'>
+            <img id='buffer-gif' src='https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExaGUwZ212cHByYXF5OXZqdXl6MW9qZmVtbmt4MmQ3M3RlOXQ3N3h1ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/aBW9YyswmydvlKf7ZU/giphy.gif' style='display:none; width:60px;'/>
+            <div id='error-msg'>STREAM NOT WORKING</div>
         </div>
-    </div>
-
-    <div class='container' id='main-content'>
-        <div id='video-header'>
-            <div id='status-overlay' style='position:absolute; top:30%; left:50%; transform:translate(-50%,-50%); z-index:99; pointer-events:none; text-align:center;'>
-                <img id='buffer-gif' src='https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExaGUwZ212cHByYXF5OXZqdXl6MW9qZmVtbmt4MmQ3M3RlOXQ3N3h1ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/aBW9YyswmydvlKf7ZU/giphy.gif' style='display:none; width:60px;'/>
-                <div id='error-msg' style='display:none; color:white; background:rgba(0,0,0,0.8); padding:10px;'>STREAM NOT WORKING</div>
+        <div id='digital-clock'>00:00 AM</div>
+        <video id='player' playsinline='playsinline'></video>
+        <div class='controls'>
+            <i class='fa-solid fa-play' onclick='vid.play()'></i>
+            <span id='status-text' style='font-weight:bold;'>SELECT CHANNEL</span>
+            <div>
+                <i class='fa-solid fa-sliders' onclick='togglePanel()'></i>
+                <i class='fa-solid fa-volume-up' id='vol-icon' onclick='toggleMute()'></i>
+                <i class='fa-solid fa-expand' onclick='vid.requestFullscreen()'></i>
             </div>
-            <div id='digital-clock'>00:00 AM</div>
-            <img alt='Logo' class='corner-logo' src='https://i.ibb.co.com/0yFrNTmv/UNF-DESIGN-20260123-224445-0001.webp'/>
-            <video id='player' playsinline='playsinline'></video>
-            <div class='controls'>
-                <div style='display:flex; align-items:center;'><i class='fa-solid fa-play' onclick='vid.play()'></i></div>
-                <div style='display:flex; align-items:center;'><span id='status-text' style='font-weight:bold;'>SELECT CHANNEL</span></div>
-                <div style='display:flex; align-items:center; gap:14px;'>
-                    <i class='fa-solid fa-sliders' onclick='togglePanel()'></i>
-                    <i class='fa-solid fa-volume-up' id='vol-icon' onclick='toggleMute()'></i>
-                    <i class='fa-solid fa-expand' onclick='goFullscreen()'></i>
-                </div>
-            </div>
-            <div id='adjust-panel'>
-                <div style='margin-bottom:10px;'>Saturation: <input max='200' min='0' oninput='applyFilter()' type='range' value='100'/></div>
-                <div style='margin-bottom:10px;'>Contrast: <input max='150' min='50' oninput='applyFilter()' type='range' value='100'/></div>
-                <div style='margin-bottom:10px;'>Sharpness: <input max='100' min='0' oninput='applyFilter()' type='range' value='0'/></div>
-            </div>
-            <div class='grid' id='channel-grid'></div>
         </div>
+        <div id='adjust-panel'>
+            Saturation: <input max='200' min='0' oninput='applyFilter()' type='range' value='100'/><br>
+            Contrast: <input max='150' min='50' oninput='applyFilter()' type='range' value='100'/><br>
+            Sharpness: <input max='100' min='0' oninput='applyFilter()' type='range' value='0'/>
+        </div>
+        <div class='grid' id='channel-grid'></div>
     </div>
+</div>
 
-    <script>
-        const vid = document.getElementById('player');
-        const s = document.querySelectorAll('input[type=range]');
-        let hls = null;
-        let tsnTimer = null;
+<script>
+    const vid = document.getElementById('player');
+    const s = document.querySelectorAll('input[type=range]');
+    let hls = null;
 
-        function updateClock() { document.getElementById('digital-clock').innerText = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }); }
-        setInterval(updateClock, 1000); updateClock();
+    function playHls(url, name) {
+        if (hls) hls.destroy();
+        hls = new Hls();
+        hls.loadSource(url);
+        hls.attachMedia(vid);
+        vid.play();
+        document.getElementById('status-text').innerText = name;
+    }
 
-        function checkCode(val) { if (val === "6767") { document.getElementById('welcome-screen').style.display = 'none'; document.getElementById('main-content').style.display = 'block'; } }
-        function goFullscreen() { if (vid.requestFullscreen) vid.requestFullscreen(); }
-        function applyFilter() { vid.style.filter = `saturate(${s[0].value}%) contrast(${s[1].value}%) blur(${s[2].value/50}px)`; }
-        function togglePanel() { const p = document.getElementById('adjust-panel'); p.style.display = (p.style.display === 'block') ? 'none' : 'block'; }
-        function toggleMute() { vid.muted = !vid.muted; document.getElementById('vol-icon').className = vid.muted ? 'fa-solid fa-volume-xmark' : 'fa-solid fa-volume-up'; }
+    function applyFilter() { vid.style.filter = `saturate(${s[0].value}%) contrast(${s[1].value}%) blur(${s[2].value/50}px)`; }
+    function togglePanel() { const p = document.getElementById('adjust-panel'); p.style.display = (p.style.display === 'block') ? 'none' : 'block'; }
+    function toggleMute() { vid.muted = !vid.muted; document.getElementById('vol-icon').className = vid.muted ? 'fa-solid fa-volume-xmark' : 'fa-solid fa-volume-up'; }
 
-        function playHls(url, name) {
-            if (hls) { hls.destroy(); hls = null; }
-            if (tsnTimer) clearInterval(tsnTimer);
-            if (Hls.isSupported()) {
-                hls = new Hls({ xhrSetup: (xhr) => { xhr.setRequestHeader('User-Agent', 'Mozilla/5.0'); }});
-                hls.loadSource(url); hls.attachMedia(vid); vid.play();
-            }
-            if (name === "D SPORTS") {
-                const links = ["https://1nyaler.streamhostingcdn.top/stream/106/index.m3u8", "https://ftv1.b-cdn.net/bfdbb576-83f7-11f0-9f89-0200170e3e04_1000028043_HLS/video_10801920_p_0.m3u8"];
-                tsnTimer = setInterval(() => {
-                    const activeIndex = Math.floor(Date.now() / 180000) % links.length;
-                    if (hls && hls.url !== links[activeIndex]) { hls.loadSource(links[activeIndex]); vid.play(); }
-                }, 5000);
-            }
-        }
+    const channels = [
+        { name: "T SPORTS", url: "https://trs1.aynaott.com/tsports/tracks-v1a1/mono.ts.m3u8", lang: "BAN/ENG", status: "online" },
+        { name: "SKY SPORTS MAIN EVENT", url: "", lang: "ENG", status: "offline" },
+        { name: "FANCODE", url: "", lang: "ENG", status: "offline" },
+        { name: "ESPN", url: "https://1nyaler.streamhostingcdn.top/stream/97/index.m3u8", lang: "DUT", status: "online" },
+        { name: "beIN SPORTS 1", url: "https://1nyaler.streamhostingcdn.top/stream/23/index.m3u8", lang: "FRE", status: "online" },
+        { name: "GO 3", url: "https://vibestream.ntechbd.app/proxy?url=https%3A%2F%2Finproviszon.st%2Ffifa-2.m3u8", lang: "ENG", status: "online" },
+        { name: "UNITE8 SPORTS 1", url: "", lang: "HIN", status: "offline" },
+        { name: "D SPORTS", url: "https://1nyaler.streamhostingcdn.top/stream/106/index.m3u8", lang: "ENG", status: "online" },
+        { name: "beIN SPORTS XTRA", url: "https://bein-esp-xumo.amagi.tv/playlistR1080p.m3u8", lang: "ARA/ENG", status: "online" },
+        { name: "beIN SPORTS 8K", url: "https://edge22.776740.ir.cdn.ir/hls2/sport.m3u8", lang: "ENG", status: "online" },
+        { name: "DAZN SPORTS", url: "https://1nyaler.streamhostingcdn.top/stream/94/index.m3u8", lang: "SPA", status: "online" },
+        { name: "SPORTS TV", url: "https://1nyaler.streamhostingcdn.top/stream/33/index.m3u8", lang: "SPA", status: "online" }
+    ];
 
-        const channels = [
-            { name: "T SPORTS", url: "https://trs1.aynaott.com/tsports/tracks-v1a1/mono.ts.m3u8", lang: "BAN/ENG", status: "online" },
-            { name: "SKY SPORTS MAIN EVENT", url: "", lang: "ENG", status: "offline" },
-            { name: "FANCODE", url: "", lang: "ENG", status: "starting soon" },
-            { name: "ESPN", url: "https://1nyaler.streamhostingcdn.top/stream/97/index.m3u8", lang: "DUT", status: "online" },
-            { name: "beIN SPORTS 1", url: "https://1nyaler.streamhostingcdn.top/stream/23/index.m3u8", lang: "FRE", status: "online" },
-            { name: "GO 3", url: "https://vibestream.ntechbd.app/proxy?url=https%3A%2F%2Finproviszon.st%2Ffifa-2.m3u8", lang: "ENG", status: "online" },
-            { name: "UNITE8 SPORTS 1", url: "", lang: "HIN", status: "offline" },
-            { name: "D SPORTS", url: "https://1nyaler.streamhostingcdn.top/stream/106/index.m3u8", lang: "ENG", status: "online" },
-            { name: "beIN SPORTS XTRA", url: "https://bein-esp-xumo.amagi.tv/playlistR1080p.m3u8", lang: "ARA/ENG", status: "online" },
-            { name: "beIN SPORTS 8K", url: "https://edge22.776740.ir.cdn.ir/hls2/sport.m3u8", lang: "ENG", status: "online" },
-            { name: "DAZN SPORTS", url: "https://1nyaler.streamhostingcdn.top/stream/94/index.m3u8", lang: "SPA", status: "online" },
-            { name: "SPORTS TV", url: "https://1nyaler.streamhostingcdn.top/stream/33/index.m3u8", lang: "SPA", status: "online" }
-        ];
+    const grid = document.getElementById('channel-grid');
+    channels.forEach(c => {
+        let card = document.createElement('div');
+        card.className = `card ${c.status}`;
+        card.innerHTML = `<strong>${c.name}</strong><br><small>${c.lang}</small><br><span class='${c.status}-text'>${c.status.toUpperCase()}</span>`;
+        card.onclick = () => { if (c.url) playHls(c.url, c.name); };
+        grid.appendChild(card);
+    });
 
-        const grid = document.getElementById('channel-grid');
-        channels.forEach(c => {
-            let card = document.createElement('div');
-            card.className = `card ${c.status}`;
-            card.innerHTML = `<div style='font-weight:bold'>${c.name}</div><div style='font-size:0.7rem; color:#ccc'>${c.lang}</div><div class='${c.status}-text'>${c.status.toUpperCase()}</div>`;
-            card.onclick = () => { if (c.status === "online") { document.querySelectorAll('.card').forEach(el => el.classList.remove('active')); card.classList.add('active'); document.getElementById('status-text').innerText = c.name; playHls(c.url, c.name); } };
-            grid.appendChild(card);
-        });
-
-        const gif = document.getElementById('buffer-gif');
-        const err = document.getElementById('error-msg');
-        vid.addEventListener('waiting', () => { gif.style.display = 'block'; });
-        vid.addEventListener('playing', () => { gif.style.display = 'none'; err.style.display = 'none'; });
-        vid.addEventListener('error', () => { gif.style.display = 'none'; err.style.display = 'block'; });
-    </script>
+    vid.addEventListener('waiting', () => { document.getElementById('buffer-gif').style.display = 'block'; });
+    vid.addEventListener('playing', () => { document.getElementById('buffer-gif').style.display = 'none'; document.getElementById('error-msg').style.display = 'none'; });
+    vid.addEventListener('error', () => { document.getElementById('error-msg').style.display = 'block'; });
+</script>
 </body>
 </html>
