@@ -80,24 +80,24 @@
         vid.addEventListener('playing', () => { gif.style.display = 'none'; err.style.display = 'none'; });
         vid.addEventListener('error', () => { gif.style.display = 'none'; err.style.display = 'block'; });
         const channels = [
-            {name: "T SPORTS", url: "https://trs1.aynaott.com/tsports/tracks-v1a1/mono.ts.m3u8", status: "online"},
-            {name: "SKY SPORTS MAIN EVENT", url: "", status: "offline"},
-            {name: "FANCODE", url: "", status: "offline"},
-            {name: "ESPN", url: "https://1nyaler.streamhostingcdn.top/stream/97/index.m3u8", status: "online"},
-            {name: "beIN SPORTS 1", url: "https://1nyaler.streamhostingcdn.top/stream/23/index.m3u8", status: "online"},
-            {name: "GO 3", url: "https://vibestream.ntechbd.app/proxy?url=https%3A%2F%2Finproviszon.st%2Ffifa-2.m3u8", status: "online"},
-            {name: "UNITE8 SPORTS 1", url: "", status: "offline"},
-            {name: "D SPORTS", url: "https://1nyaler.streamhostingcdn.top/stream/106/index.m3u8", status: "online"},
-            {name: "beIN SPORTS XTRA", url: "https://bein-esp-xumo.amagi.tv/playlistR1080p.m3u8", status: "online"},
-            {name: "beIN SPORTS 8K", url: "https://edge22.776740.ir.cdn.ir/hls2/sport.m3u8", status: "online"},
-            {name: "DAZN SPORTS", url: "https://1nyaler.streamhostingcdn.top/stream/94/index.m3u8", status: "online"},
-            {name: "SPORTS TV", url: "https://1nyaler.streamhostingcdn.top/stream/33/index.m3u8", status: "online"}
+            {name: "T SPORTS", url: "https://trs1.aynaott.com/tsports/tracks-v1a1/mono.ts.m3u8", lang: "BAN/ENG", status: "online"},
+            {name: "SKY SPORTS MAIN EVENT", url: "", lang: "ENG", status: "offline"},
+            {name: "FANCODE", url: "", lang: "ENG", status: "offline"},
+            {name: "ESPN", url: "https://1nyaler.streamhostingcdn.top/stream/97/index.m3u8", lang: "DUT", status: "online"},
+            {name: "beIN SPORTS 1", url: "https://1nyaler.streamhostingcdn.top/stream/23/index.m3u8", lang: "FRE", status: "online"},
+            {name: "GO 3", url: "https://vibestream.ntechbd.app/proxy?url=https%3A%2F%2Finproviszon.st%2Ffifa-2.m3u8", lang: "ENG", status: "online"},
+            {name: "UNITE8 SPORTS 1", url: "", lang: "HIN", status: "offline"},
+            {name: "D SPORTS", url: "https://1nyaler.streamhostingcdn.top/stream/106/index.m3u8", lang: "ENG", status: "online"},
+            {name: "beIN SPORTS XTRA", url: "https://bein-esp-xumo.amagi.tv/playlistR1080p.m3u8", lang: "ARA/ENG", status: "online"},
+            {name: "beIN SPORTS 8K", url: "https://edge22.776740.ir.cdn.ir/hls2/sport.m3u8", lang: "ENG", status: "online"},
+            {name: "DAZN SPORTS", url: "https://1nyaler.streamhostingcdn.top/stream/94/index.m3u8", lang: "SPA", status: "online"},
+            {name: "SPORTS TV", url: "https://1nyaler.streamhostingcdn.top/stream/33/index.m3u8", lang: "SPA", status: "online"}
         ];
         const grid = document.getElementById('channel-grid');
         channels.forEach(c => {
             let card = document.createElement('div');
             card.className = `card ${c.status}`;
-            card.innerHTML = `<div>${c.name}</div><div class='${c.status}-text'>${c.status.toUpperCase()}</div>`;
+            card.innerHTML = `<div style='font-weight:bold'>${c.name}</div><div style='font-size:0.7rem; color:#ccc'>${c.lang}</div><div class='${c.status}-text'>${c.status.toUpperCase()}</div>`;
             card.onclick = () => { if(c.url) { document.querySelectorAll('.card').forEach(el => el.classList.remove('active')); card.classList.add('active'); document.getElementById('status-text').innerText = c.name; playHls(c.url); } };
             grid.appendChild(card);
         });
