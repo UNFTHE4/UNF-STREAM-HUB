@@ -7,37 +7,136 @@
     <link href='https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css' rel='stylesheet'/>
     <script src='https://cdn.jsdelivr.net/npm/hls.js@1.4.10/dist/hls.min.js'></script>
     <style>
-        body { margin:0; padding:0; background:#0b0c10; font-family:sans-serif; color:#fff; overflow-x: hidden; }
-        :root { --mint: #00ff66; --panel: #11141a; --red: #ff4757; }
+        /* ===== RESET ===== */
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:sans-serif; color:#fff; overflow-x:hidden; min-height:100vh; }
+        
+        /* ===== CUSTOM BACKGROUND ===== */
+        body {
+            background: #0b0c10 url('https://your-custom-background-image-url.jpg') no-repeat center center fixed;
+            background-size: cover;
+        }
+        /* Fallback if image fails */
+        .bg-overlay {
+            position: fixed;
+            top:0; left:0; width:100%; height:100%;
+            background: rgba(11, 12, 16, 0.85);
+            z-index: -1;
+        }
 
-        /* Video Player & Theme */
-        #video-header { background:#000; position:relative; }
+        :root { --mint: #00ff66; --panel: rgba(17, 20, 26, 0.9); --red: #ff4757; }
+
+        /* ===== VIDEO PLAYER ===== */
+        #video-header { background:#000; position:relative; border-radius:12px; overflow:hidden; }
         #player { width: 100%; aspect-ratio: 16/9; background:#000; }
-        .controls { display: flex; justify-content:space-between; align-items:center; padding: 15px; color: var(--mint); }
+        .controls { display: flex; justify-content:space-between; align-items:center; padding: 15px; color: var(--mint); background:rgba(0,0,0,0.7); }
         .controls i { cursor: pointer; font-size: 1.2rem; }
         
-        /* Grid & Cards */
+        /* ===== GRID & CARDS ===== */
         .grid { display:grid; gap: 10px; padding: 15px; }
-        .card { background:var(--panel); padding:15px; border-radius:8px; border:2px solid transparent; cursor:pointer; color: #fff; transition: all 0.3s ease; }
-        .card.active { border-color: var(--mint); background: #1a2a3a; box-shadow: 0 0 15px rgba(0, 255, 102, 0.3); transform: scale(1.02); }
+        .card { background:var(--panel); padding:15px; border-radius:8px; border:2px solid transparent; cursor:pointer; color:#fff; transition:all 0.3s ease; backdrop-filter:blur(4px); }
+        .card.active { border-color: var(--mint); background: rgba(26, 42, 58, 0.9); box-shadow: 0 0 15px rgba(0, 255, 102, 0.3); transform: scale(1.02); }
         .card.offline { opacity: 0.5; filter: grayscale(1); }
         .online-text { color: var(--mint); font-weight:bold; }
         .offline-text { color: var(--red); font-weight:bold; }
 
-        /* Responsive Layout */
+        /* ===== RESPONSIVE ===== */
         @media (max-width: 899px) { .grid { grid-template-columns: 1fr 1fr; } }
         @media (min-width: 900px) { .container { max-width: 1000px; margin: 0 auto; } .grid { grid-template-columns: repeat(3, 1fr) !important; } }
 
-        /* Overlays & Adjustments */
+        /* ===== OVERLAYS ===== */
         #status-overlay { position:absolute; top:30%; left:50%; transform:translate(-50%,-50%); z-index:99; pointer-events:none; text-align:center; }
-        #error-msg { display:none; color:white; background:rgba(0,0,0,0.8); padding:10px; }
-        #adjust-panel { position:fixed; bottom:10px; left:10px; right:10px; max-width:500px; margin: 0 auto; background:#111; padding:20px; border-radius:12px; border:1px solid var(--mint); display:none; z-index:1000; }
-        #digital-clock { position: absolute; top: 15px; right: 20px; color: var(--mint); font-family: monospace; z-index: 100; }
+        #error-msg { display:none; color:white; background:rgba(0,0,0,0.8); padding:10px; border-radius:8px; }
+        #adjust-panel { position:fixed; bottom:10px; left:10px; right:10px; max-width:500px; margin:0 auto; background:rgba(17,17,17,0.95); padding:20px; border-radius:12px; border:1px solid var(--mint); display:none; z-index:1000; backdrop-filter:blur(8px); }
+        #digital-clock { position:absolute; top:15px; right:20px; color:var(--mint); font-family:monospace; z-index:100; }
+
+        /* ===== LOGIN / WELCOME SCREEN ===== */
+        #login-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(11, 12, 16, 0.92);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            backdrop-filter: blur(10px);
+            padding: 20px;
+        }
+        .login-box {
+            text-align: center;
+            max-width: 420px;
+            width: 100%;
+            padding: 40px 30px;
+            background: rgba(17, 20, 26, 0.9);
+            border-radius: 20px;
+            border: 1px solid rgba(0, 255, 102, 0.3);
+            box-shadow: 0 0 60px rgba(0, 255, 102, 0.1);
+        }
+        .login-logo {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 15px;
+            background: url('https://your-logo-image-url.png') no-repeat center center;
+            background-size: contain;
+            border-radius: 50%;
+            border: 3px solid var(--mint);
+        }
+        .login-box h1 { color: var(--mint); font-size: 2.2rem; margin-bottom:5px; }
+        .login-box p { color: #889; margin-bottom:25px; font-size:0.95rem; }
+        .login-box input {
+            width: 100%;
+            padding: 14px;
+            border-radius: 10px;
+            border: 2px solid #333;
+            background: #0b0c10;
+            color: #fff;
+            font-size: 1rem;
+            outline: none;
+            transition: 0.3s;
+        }
+        .login-box input:focus { border-color: var(--mint); }
+        .login-box button {
+            margin-top: 15px;
+            width: 100%;
+            padding: 14px;
+            background: var(--mint);
+            color: #000;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .login-box button:hover { background: #00dd55; transform: scale(1.02); }
+        #login-error { color: var(--red); margin-top: 12px; display:none; font-weight:bold; }
+        .login-footer { margin-top: 20px; color: #556; font-size:0.8rem; }
+
+        /* ===== MAIN CONTENT (hidden until login) ===== */
+        #main-content { display: none; max-width: 1000px; margin: 20px auto; padding:0 15px; }
     </style>
 </head>
 <body>
 
-<div class='container' id='main-content' style='display:block;'>
+<!-- ===== BACKGROUND OVERLAY ===== -->
+<div class="bg-overlay"></div>
+
+<!-- ===== LOGIN / WELCOME SCREEN ===== -->
+<div id="login-overlay">
+    <div class="login-box">
+        <div class="login-logo"></div>
+        <h1>UNF</h1>
+        <p>United NTLA of Flario<br><span style="color:#667;font-size:0.8rem;">Enter the nation's passcode</span></p>
+        <input type="password" id="password-input" placeholder="Enter passcode..." autofocus>
+        <button onclick="checkPassword()">🔓 Enter UNF</button>
+        <div id="login-error">❌ Incorrect passcode!</div>
+        <div class="login-footer">🇺🇳 For citizens of Flario only</div>
+    </div>
+</div>
+
+<!-- ===== MAIN STREAM HUB ===== -->
+<div id="main-content">
     <div id='video-header'>
         <div id='status-overlay'>
             <img id='buffer-gif' src='https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExaGUwZ212cHByYXF5OXZqdXl6MW9qZmVtbmt4MmQ3M3RlOXQ3N3h1ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/aBW9YyswmydvlKf7ZU/giphy.gif' style='display:none; width:60px;'/>
@@ -64,6 +163,26 @@
 </div>
 
 <script>
+    // ===== PASSWORD CHECK =====
+    function checkPassword() {
+        const pass = document.getElementById('password-input').value;
+        // 🔑 CHANGE THIS PASSWORD to whatever you want
+        if (pass === 'flario2026') {
+            document.getElementById('login-overlay').style.display = 'none';
+            document.getElementById('main-content').style.display = 'block';
+            document.getElementById('login-error').style.display = 'none';
+        } else {
+            document.getElementById('login-error').style.display = 'block';
+            document.getElementById('password-input').value = '';
+            document.getElementById('password-input').focus();
+        }
+    }
+    // Enter key support
+    document.getElementById('password-input').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') checkPassword();
+    });
+
+    // ===== VIDEO PLAYER =====
     const vid = document.getElementById('player');
     const s = document.querySelectorAll('input[type=range]');
     let hls = null;
@@ -71,10 +190,10 @@
     function playHls(url, name) {
         if (hls) hls.destroy();
         
-        // Remove active class from all cards
+        // Remove active from all cards
         document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
         
-        // Highlight the selected card
+        // Highlight selected card
         const cards = document.querySelectorAll('.card');
         cards.forEach(c => {
             if (c.querySelector('strong').innerText === name) {
@@ -120,6 +239,16 @@
     vid.addEventListener('waiting', () => { document.getElementById('buffer-gif').style.display = 'block'; });
     vid.addEventListener('playing', () => { document.getElementById('buffer-gif').style.display = 'none'; document.getElementById('error-msg').style.display = 'none'; });
     vid.addEventListener('error', () => { document.getElementById('error-msg').style.display = 'block'; });
+
+    // ===== DIGITAL CLOCK =====
+    function updateClock() {
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2, '0');
+        const mins = String(now.getMinutes()).padStart(2, '0');
+        document.getElementById('digital-clock').innerText = `${hours}:${mins}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
 </script>
 </body>
 </html>
