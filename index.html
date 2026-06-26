@@ -25,6 +25,44 @@
 
         :root { --mint: #00ff66; --panel: rgba(17, 20, 26, 0.9); --red: #ff4757; }
 
+        /* ===== TOP HEADER WITH LOGO ===== */
+        .top-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 20px;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(6px);
+            border-bottom: 2px solid var(--mint);
+            margin-bottom: 20px;
+            border-radius: 12px 12px 0 0;
+        }
+        .top-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .top-logo img {
+            height: 50px;
+            width: auto;
+            border-radius: 8px;
+        }
+        .top-logo span {
+            color: var(--mint);
+            font-weight: bold;
+            font-size: 1.4rem;
+            letter-spacing: 1px;
+        }
+        .top-clock {
+            color: var(--mint);
+            font-family: monospace;
+            font-size: 1.2rem;
+            background: rgba(0,0,0,0.5);
+            padding: 6px 16px;
+            border-radius: 20px;
+            border: 1px solid var(--mint);
+        }
+
         /* ===== VIDEO PLAYER ===== */
         #video-header { background:#000; position:relative; border-radius:12px; overflow:hidden; }
         #player { width: 100%; aspect-ratio: 16/9; background:#000; }
@@ -47,7 +85,6 @@
         #status-overlay { position:absolute; top:30%; left:50%; transform:translate(-50%,-50%); z-index:99; pointer-events:none; text-align:center; }
         #error-msg { display:none; color:white; background:rgba(0,0,0,0.8); padding:10px; border-radius:8px; }
         #adjust-panel { position:fixed; bottom:10px; left:10px; right:10px; max-width:500px; margin:0 auto; background:rgba(17,17,17,0.95); padding:20px; border-radius:12px; border:1px solid var(--mint); display:none; z-index:1000; backdrop-filter:blur(8px); }
-        #digital-clock { position:absolute; top:15px; right:20px; color:var(--mint); font-family:monospace; z-index:100; }
 
         /* ===== LOGIN / WELCOME SCREEN ===== */
         #login-overlay {
@@ -114,7 +151,7 @@
         #login-error { color: var(--red); margin-top: 12px; display:none; font-weight:bold; }
         .login-footer { margin-top: 20px; color: #556; font-size:0.8rem; }
 
-        /* ===== MAIN CONTENT (hidden until login) ===== */
+        /* ===== MAIN CONTENT ===== */
         #main-content { display: none; max-width: 1000px; margin: 20px auto; padding:0 15px; }
     </style>
 </head>
@@ -132,18 +169,28 @@
         <input type="password" id="password-input" placeholder="****" maxlength="4" inputmode="numeric" autofocus>
         <button onclick="checkPassword()">🔓 Enter UNF</button>
         <div id="login-error">❌ Incorrect passcode!</div>
-        <div class="login-footer">🇺🇳 For citizens of Flario only</div>
+        <div class="login-footer">For citizens of Flario only</div>
     </div>
 </div>
 
 <!-- ===== MAIN STREAM HUB ===== -->
 <div id="main-content">
+    
+    <!-- TOP HEADER WITH LOGO & CLOCK -->
+    <div class="top-header">
+        <div class="top-logo">
+            <!-- REPLACE src with your actual logo image URL -->
+            <img src="https://your-logo-image-url.png" alt="UNF Logo">
+            <span>UNF</span>
+        </div>
+        <div class="top-clock" id="digital-clock">00:00</div>
+    </div>
+
     <div id='video-header'>
         <div id='status-overlay'>
             <img id='buffer-gif' src='https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExaGUwZ212cHByYXF5OXZqdXl6MW9qZmVtbmt4MmQ3M3RlOXQ3N3h1ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/aBW9YyswmydvlKf7ZU/giphy.gif' style='display:none; width:60px;'/>
             <div id='error-msg'>STREAM NOT WORKING</div>
         </div>
-        <div id='digital-clock'>00:00 AM</div>
         <video id='player' playsinline='playsinline'></video>
         <div class='controls'>
             <i class='fa-solid fa-play' onclick='vid.play()'></i>
@@ -249,15 +296,15 @@
     vid.addEventListener('playing', () => { document.getElementById('buffer-gif').style.display = 'none'; document.getElementById('error-msg').style.display = 'none'; });
     vid.addEventListener('error', () => { document.getElementById('error-msg').style.display = 'block'; });
 
-    // ===== DIGITAL CLOCK =====
+    // ===== DIGITAL CLOCK (NOW WORKING) =====
     function updateClock() {
         const now = new Date();
         const hours = String(now.getHours()).padStart(2, '0');
         const mins = String(now.getMinutes()).padStart(2, '0');
         document.getElementById('digital-clock').innerText = `${hours}:${mins}`;
     }
-    setInterval(updateClock, 1000);
-    updateClock();
+    updateClock(); // run immediately
+    setInterval(updateClock, 1000); // update every second
 </script>
 </body>
 </html>
