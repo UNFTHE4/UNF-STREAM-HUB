@@ -390,17 +390,19 @@
                     }
                 }
             });
+// ... end of your playHls code ...
         } else if (vid.canPlayType('application/vnd.apple.mpegurl')) {
             vid.src = url;
             vid.play();
-            
         }
-        function playDash(url, name) {
+    } // <--- ADD THIS CLOSING BRACE HERE TO FIX THE BREAK
+
+    function playDash(url, name) {
         const vid = document.getElementById('player');
         const player = dashjs.MediaPlayer().create();
         player.initialize(vid, url, true);
         document.getElementById('status-text').innerText = name;
-        }
+    }
 
         
         // Special D SPORTS rotation
