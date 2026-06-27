@@ -355,7 +355,8 @@
         document.getElementById('vol-icon').className = vid.muted ? 'fa-solid fa-volume-xmark' : 'fa-solid fa-volume-up';
     }
 
-    function playHls(url, name) {
+    
+                function playHls(url, name) {
         if (hls) {
             hls.destroy();
             hls = null;
@@ -367,21 +368,20 @@
 
         if (window.Hls && Hls.isSupported()) {
             hls = new Hls({
-             maxBufferLength: 60, // Increase this from 20 to 60 (holds 1 minute of video)
-             backBufferLength: 10, // Keeps a small bit of what you just watched
-             xhrSetup: (xhr) => { xhr.setRequestHeader('User-Agent', 'Mozilla/5.0'); }
+                maxBufferLength: 60,
+                backBufferLength: 10,
+                xhrSetup: (xhr) => { xhr.setRequestHeader('User-Agent', 'Mozilla/5.0'); }
             });
             hls.loadSource(url);
             hls.attachMedia(vid);
             hls.on(Hls.Events.MANIFEST_PARSED, () => {
                 vid.play();
             });
-            // Handle errors more gracefully
             hls.on(Hls.Events.ERROR, function (event, data) {
                 if (data.fatal) {
                     switch (data.type) {
                         case Hls.ErrorTypes.NETWORK_ERROR:
-                            hls.startLoad(); // Try to recover
+                            hls.startLoad();
                             break;
                         default:
                             hls.destroy();
@@ -394,23 +394,33 @@
             vid.play();
         }
 
-        // Special D SPORTS rotation
+        // ===== FIXED D SPORTS ROTATION =====
         if (name === "D SPORTS") {
             const links = [
                 "https://1nyaler.streamhostingcdn.top/stream/106/index.m3u8",
                 "https://ftv1.b-cdn.net/bfdb5b76-83f7-11f0-9f89-0200170e3e04_1000028043_HLS/video_10801920_p_0.m3u8"
             ];
-            const interval = 180000;
+            const interval = 180000; // 3 minutes
+
+            // Force first link to load immediately
+            if (hls) {
+                hls.loadSource(links[0]);
+                hls.attachMedia(vid);
+                vid.play();
+            }
+
+            // Then rotate every 3 minutes
             tsnTimer = setInterval(() => {
                 const activeIndex = Math.floor(Date.now() / interval) % links.length;
-                if (hls && hls.url !== links[activeIndex]) {
+                if (hls) {
                     hls.loadSource(links[activeIndex]);
-                    hls.currentLevel = hls.levels.length - 1;
+                    hls.attachMedia(vid);
                     vid.play();
                 }
-            }, 5000);
+            }, interval); // Now runs every 3 minutes, not 5 seconds!
         }
     }
+ 
 
     // ===== CHANNELS =====
     const channels = [
