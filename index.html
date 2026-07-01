@@ -8,6 +8,10 @@
     <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="icon" type="image/webp" href="https://i.ibb.co.com/0yFrNTmv/UNF-DESIGN-20260123-224445-0001.webp">
     <script src="https://cdn.jsdelivr.net/npm/hls.js@1.4.10/dist/hls.min.js"></script>
+    
+    <!-- ===== GOOGLE CAST SDK ===== -->
+    <script src="https://www.gstatic.com/cv/js/sender/latest/cast_sender.js"></script>
+
     <style>
         /* ===== RESET ===== */
         * { margin:0; padding:0; box-sizing:border-box; }
@@ -18,7 +22,7 @@
         #welcome-screen {
             position: fixed;
             top:0; left:0; width:100%; height:100%;
-            background: url("https://i.ibb.co.com/vvCwyJG5/WC-1.png") center/cover no-repeat;
+            background: url("https://i.ibb.co.com/fVBFKYxD/COVER-ART.png") center/cover no-repeat;
             background-color: #0b0c10;
             z-index: 9999;
             display: flex;
@@ -91,13 +95,37 @@
             overflow: hidden;
             margin-top: 10px;
         }
+        
+        /* ===== VIDEO PLAYER AREA ===== */
+        .video-wrapper {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background: #000;
+            overflow: hidden;
+        }
         #player {
             width: 100%;
-            aspect-ratio: 16/9;
+            height: 100%;
+            display: block;
             background: #000;
         }
 
-        /* ===== TOP BAR (LOGO + CLOCK + MENU) ===== */
+        /* ===== CUSTOM IMAGE ONLY INSIDE VIDEO PLAYER ===== */
+        #unf-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url("https://i.ibb.co.com/rGbYfjND/VIDEOPLAYER-ART.png") center/cover no-repeat;
+            background-color: #0b0c10;
+            z-index: 0;
+            pointer-events: none;
+            display: block;
+        }
+
+        /* ===== TOP BAR ===== */
         .top-bar {
             display: flex;
             justify-content: space-between;
@@ -141,7 +169,7 @@
             #digital-clock { display: none; }
         }
 
-        /* ===== MENU DROPDOWN ===== */
+        /* ===== MENU ===== */
         #menu-dropdown {
             display: none;
             position: absolute;
@@ -202,7 +230,7 @@
         /* ===== OVERLAYS ===== */
         #status-overlay {
             position: absolute;
-            top: 30%;
+            top: 20%;
             left: 50%;
             transform: translate(-50%, -50%);
             z-index: 99;
@@ -211,7 +239,7 @@
         }
         #buffer-gif {
             display: none;
-            width: 60px;
+            width: 100px;
         }
         #error-msg {
             display: none;
@@ -281,6 +309,50 @@
         }
         #adjust-panel input {
             width: 100%;
+        }
+
+        /* ===== DEADSIMPLECHAT ===== */
+        #chat-overlay {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            background: transparent;
+            pointer-events: none;
+        }
+
+        #chat-overlay iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            pointer-events: auto;
+            border-radius: 12px;
+            background: #11141a;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.8);
+        }
+
+        /* Desktop: floating on the left */
+        @media (min-width: 900px) {
+            #chat-overlay {
+                top: 120px;
+                left: 20px;
+                width: 320px;
+                height: 400px;
+                border-radius: 12px;
+            }
+        }
+
+        /* Mobile: bottom half of screen */
+        @media (max-width: 899px) {
+            #chat-overlay {
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                height: 50vh;
+                border-radius: 16px 16px 0 0;
+            }
+            #chat-overlay iframe {
+                border-radius: 16px 16px 0 0;
+            }
         }
 
         /* ===== FOOTER ===== */
@@ -356,6 +428,79 @@
             margin-top: 10px;
             font-weight: bold;
         }
+
+        /* ===== SETTINGS OVERLAY ===== */
+        #settings-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 9998;
+            justify-content: center;
+            align-items: center;
+        }
+        .settings-box {
+            background: #11141a;
+            padding: 30px;
+            border-radius: 20px;
+            border: 2px solid var(--mint);
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+        }
+        .settings-box h2 {
+            color: var(--mint);
+            margin-bottom: 15px;
+        }
+        .settings-box label {
+            display: block;
+            text-align: left;
+            color: #ccc;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+        .settings-box select, .settings-box input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #333;
+            background: #0b0c10;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+        .settings-box select:focus, .settings-box input:focus {
+            border-color: var(--mint);
+            outline: none;
+        }
+        .settings-box button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 20px;
+            background: var(--mint);
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .settings-box button:hover {
+            background: #00dd55;
+        }
+        .settings-box .close-btn {
+            margin-top: 10px;
+            background: transparent;
+            border: 1px solid #555;
+            color: #889;
+        }
+        .settings-box .close-btn:hover {
+            background: #222;
+        }
+        #settings-status {
+            margin-top: 10px;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -375,7 +520,6 @@
 <!-- ===== MAIN CONTENT ===== -->
 <div id="main-content">
 
-    
     <!-- TOP BAR -->
     <div class="top-bar">
         <div class="logo">
@@ -393,24 +537,35 @@
         <div onclick="playMovie()">🎬 Movie Player</div>
         <div onclick="openRequestMovie()">🎞️ Request Movie</div>
         <div onclick="reportError()">🚨 Report Error</div>
+        <div onclick="openSettings()">⚙️ Settings</div>
     </div>
 
     <!-- VIDEO HEADER -->
     <div id="video-header">
+
+        <!-- VIDEO WRAPPER (locks image inside 16:9 area) -->
+        <div class="video-wrapper">
+            <!-- CUSTOM IMAGE ONLY INSIDE VIDEO PLAYER AREA -->
+            <div id="unf-placeholder"></div>
+            <video id="player" playsinline></video>
+        </div>
+
         <div id="status-overlay">
             <img id="buffer-gif" src="https://media4.giphy.com/media/aBW9YyswmydvlKf7ZU/giphy.gif">
             <div id="error-msg">IF STREAM IS NOT WORKING PLEASE REPORT AND LET US KNOW</div>
         </div>
-        <video id="player" playsinline></video>
+
         <div class="controls">
             <div class="left">
                 <i class="fa-solid fa-play" onclick="vid.play()"></i>
             </div>
             <span id="status-text">SELECT CHANNEL</span>
             <div class="right">
+                <i class="fa-solid fa-comment-dots" onclick="toggleChat()" style="cursor:pointer; color:var(--mint);"></i>
                 <i class="fa-solid fa-sliders" onclick="togglePanel()"></i>
                 <i class="fa-solid fa-volume-up" id="vol-icon" onclick="toggleMute()"></i>
                 <i class="fa-solid fa-expand" onclick="goFullscreen()"></i>
+                <i class="fa-solid fa-chromecast" id="castButton" onclick="startCasting()" style="cursor:pointer; display:none; color:#fff;"></i>
             </div>
         </div>
         <div id="adjust-panel">
@@ -437,6 +592,32 @@
         <button class="cancel-btn" onclick="document.getElementById('request-overlay').style.display='none'">Cancel</button>
         <div id="request-status"></div>
     </div>
+</div>
+
+<!-- ===== SETTINGS OVERLAY ===== -->
+<div id="settings-overlay">
+    <div class="settings-box">
+        <h2>⚙️ Settings</h2>
+
+        <label for="resolution-select">Video Resolution</label>
+        <select id="resolution-select">
+            <option value="low">Low (480p)</option>
+            <option value="auto" selected>Auto</option>
+            <option value="high">High (1080p+)</option>
+        </select>
+
+        <label for="age-input">Age (for restricted content)</label>
+        <input type="number" id="age-input" placeholder="Enter your age" min="1" max="120">
+
+        <button onclick="saveSettings()">💾 Save Settings</button>
+        <button class="close-btn" onclick="document.getElementById('settings-overlay').style.display='none'">Close</button>
+        <div id="settings-status"></div>
+    </div>
+</div>
+
+<!-- ===== DEADSIMPLECHAT OVERLAY ===== -->
+<div id="chat-overlay">
+    <iframe src="https://deadsimplechat.com/_x5KSSXCX" allow="camera; microphone; fullscreen; autoplay"></iframe>
 </div>
 
 <script>
@@ -480,66 +661,54 @@
         document.getElementById('vol-icon').className = vid.muted ? 'fa-solid fa-volume-xmark' : 'fa-solid fa-volume-up';
     }
 
-    // ===== UPDATED playHls WITH AUTOPLAY FIX =====
-    function playHls(url, name) {
-        if (hls) {
-            hls.destroy();
-            hls = null;
-        }
-        if (tsnTimer) {
-            clearInterval(tsnTimer);
-            tsnTimer = null;
-        }
+    function playStream(url, name) {
+        // Hide placeholder
+        document.getElementById('unf-placeholder').style.display = 'none';
 
-        if (window.Hls && Hls.isSupported()) {
-       hls = new Hls({
-            maxBufferLength: 120, 
-            backBufferLength: 10,
-            xhrSetup: (xhr) => { xhr.setRequestHeader('User-Agent', 'Mozilla/5.0'); }
-            });
-            hls.loadSource(url);
-            hls.attachMedia(vid);
+        // Cleanup
+        if (hls) { hls.destroy(); hls = null; }
+        if (tsnTimer) { clearInterval(tsnTimer); tsnTimer = null; }
 
-            // ===== FORCE PLAY ON EVERY CHANNEL SWITCH =====
-            vid.muted = true;
-            const playPromise = vid.play();
-            if (playPromise !== undefined) {
-                playPromise
-                    .then(() => {
-                        setTimeout(() => {
-                            vid.muted = false;
-                        }, 300);
-                    })
-                    .catch(() => {
-                        // Fallback: fake a click on the video
-                        const fakeClick = new Event('click');
-                        vid.dispatchEvent(fakeClick);
-                        setTimeout(() => {
-                            vid.play().then(() => {
-                                setTimeout(() => {
-                                    vid.muted = false;
-                                }, 300);
-                            });
-                        }, 100);
-                    });
-            }
+        // Find the channel object so we can access its backup URL
+        const channel = channels.find(c => c.name === name);
 
-            hls.on(Hls.Events.MANIFEST_PARSED, () => {
-                vid.play();
-            });
-            hls.on(Hls.Events.ERROR, function (event, data) {
-                if (data.fatal) {
-                    switch (data.type) {
-                        case Hls.ErrorTypes.NETWORK_ERROR:
-                            hls.startLoad();
-                            break;
-                        default:
-                            hls.destroy();
-                            break;
+        // M3U8 Logic (HLS.js)
+        if (url.includes('.m3u8')) {
+            if (window.Hls && Hls.isSupported()) {
+                hls = new Hls({
+                    maxBufferLength: 500,
+                    backBufferLength: 10,
+                    xhrSetup: (xhr) => { xhr.setRequestHeader('User-Agent', 'Mozilla/5.0'); }
+                });
+                hls.loadSource(url);
+                hls.attachMedia(vid);
+                hls.on(Hls.Events.MANIFEST_PARSED, () => { vid.play(); });
+
+                // ===== AUTO-SWITCH TO BACKUP ON ERROR =====
+                hls.on(Hls.Events.ERROR, (event, data) => {
+                    if (data.fatal) {
+                        // If a backup exists and we haven't tried it yet
+                        if (channel && channel.backup && url !== channel.backup) {
+                            console.log("🔁 Main stream failed. Switching to backup...");
+                            playStream(channel.backup, name);
+                        } else {
+                            console.error("Stream failed and no backup available.");
+                            document.getElementById('error-msg').style.display = 'block';
+                        }
                     }
-                }
-            });
-        } else if (vid.canPlayType('application/vnd.apple.mpegurl')) {
+                });
+            } else if (vid.canPlayType('application/vnd.apple.mpegurl')) {
+                vid.src = url;
+                vid.play();
+            }
+        }
+        // MP4 direct fallback
+        else if (url.includes('.mp4')) {
+            vid.src = url;
+            vid.play();
+        }
+        // Any other format
+        else {
             vid.src = url;
             vid.play();
         }
@@ -547,7 +716,7 @@
         // Special D SPORTS rotation
         if (name === "D SPORTS") {
             const links = [
-                "https://1nyaler.streamhostingcdn.top/stream/106/index.m3u8",
+                "https://1nyaler.streamhostingcdn.top/stream/106/index.m3u8", 
                 "https://fl1004.bozztv.com/ushba-mafia/tracks-v1a1/mono.m3u8"
             ];
             const interval = 180000;
@@ -563,44 +732,281 @@
     }
 
     // ===== CHANNELS =====
-    const channels = [
-        { name: "T SPORTS", url: "https://smartbox.digital/stream/T-SPORTS/playlist.m3u8", lang: "BAN/ENG", status: "online" },
-        { name: "SKY SPORTS MAIN EVENT", url: "https://smartbox.digital/stream-load/SKY%20SPORTS%20MAIN%20EVENT%20HD/playlist.m3u8", lang: "ENG", status: "online" },
-        { name: "SKY SPORTS FOOTBALL", url: "https://smartbox.digital/stream-load/skysports_football/playlist.m3u8", lang: "ENG", status: "online" },
-        { name: "SKY SPORTS CRICKET", url: "https://smartbox.digital/stream-load/skycricket/playlist.m3u8", lang: "ENG", status: "online" },
-        { name: "SKY SPORTS F1", url: "https://xstm.250909.cc/live/SPORTSFLUX-POOL-20acb0a9c8/5ffe6c552a88/1037.m3u8", lang: "ENG", status: "online" },
-        { name: "ESPN", url: "https://1nyaler.streamhostingcdn.top/stream/97/index.m3u8", lang: "DUT", status: "offline" }, 
-        { name: "beIN SPORTS 1", url: "https://1nyaler.streamhostingcdn.top/stream/23/index.m3u8", lang: "FRE", status: "online" },
-        { name: "beIN SPORTS 1 MAX", url: "https://edge22.776740.ir.cdn.ir/hls2/sport.m3u8", lang: "ARA", status: "online" },
-        { name: "beIN SPORTS XTRA", url: "https://bein-esp-xumo.amagi.tv/playlistR1080p.m3u8", lang: "UNK", status: "online" },
-        { name: "DAZN SPORTS", url: "https://1nyaler.streamhostingcdn.top/stream/52/index.m3u8", lang: "SPA", status: "online" },
-        { name: "DAZN F1", url: "https://tv.topmediatv.net:25463/live/TopMediaWeb/bOteTR8ED1/374.m3u8", lang: "SPA", status: "online" },
-        { name: "SKY SPORTS F1 UHD", url: "https://inproviszon.st/sky-sports-f1-uhd.m3u8", lang: "ENG", status: "offline" },
-        { name: "FOX SPORTS", url: "https://1nyaler.streamhostingcdn.top/stream/26/index.m3u8", lang: "ENG", status: "online" },
-        { name: "FOX", url: "https://d1jzu95oc8fgt3.cloudfront.net/FOX_Sports720p.m3u8", lang: "ENG", status: "online" },
-        { name: "D SPORTS", url: "https://1nyaler.streamhostingcdn.top/stream/106/index.m3u8", lang: "ENG", status: "online" },
-        { name: "TSN 1", url: "https://pub-098b280041274cf5929f5e19cfc8ac67.r2.dev/en1/index.m3u8", lang: "ENG", status: "offline" },
-        { name: "TOFFEE", url: "https://sm-monirul.top/tof/live/toffee4/index.m3u8", lang: "ENG", status: "offline" }, 
-        { name: "WIN SPORTS", url: "https://1nyaler.streamhostingcdn.top/stream/32/index.m3u8", lang: "SPA", status: "online" },
-        { name: "SPORT TV", url: "https://1nyaler.streamhostingcdn.top/stream/33/index.m3u8", lang: "SPA", status: "online" },
-        { name: "koora city", url: "https://am.homom.store/braz1_480/index.m3u8", lang: "weird lang?", status: "offline" }
-    ];
+const channels = [
+    { 
+        name: "T SPORTS", 
+        url: "https://tvsen7.aynaott.com/tsports-hd/index.m3u8", 
+        backup: "https://smartbox.digital/stream/T-SPORTS/playlist.m3u8", 
+        lang: "BAN/ENG", 
+        status: "offline",
+        ageRestricted: false
+    },
+    { 
+        name: "SKY SPORTS MAIN EVENT", 
+        url: "https://smartbox.digital/stream-load/SKY%20SPORTS%20MAIN%20EVENT%20HD/playlist.m3u8", 
+        backup: " paste here ", 
+        lang: "ENG", 
+        status: "offline",
+        ageRestricted: false
+    },
+    { 
+        name: "SKY SPORTS FOOTBALL", 
+        url: "https://smartbox.digital/stream-load/skysports_football/playlist.m3u8", 
+        backup: "https://tv.dsat.bd/api/proxy.php?url=http%3A%2F%2F45.171.64.30%3A2000%2Fplay%2Fa08m%2F21445435.m3u8", 
+        lang: "ENG", 
+        status: "offline",
+        ageRestricted: false
+    },
+    { 
+        name: "SKY SPORTS CRICKET", 
+        url: "https://smartbox.digital/stream-load/skycricket/playlist.m3u8", 
+        backup: "https://atc.hopto.org/sly-sprts-cricket-hd-sport/tracks-v1a1/mono.m3u8",
+        lang: "ENG", 
+        status: "online",
+        ageRestricted: false
+    },
+    { 
+        name: "SKY SPORTS F1", 
+        url: "https://xstm.250909.cc/live/SPORTSFLUX-POOL-20acb0a9c8/5ffe6c552a88/1037.m3u8", 
+        backup: "https://inproviszon.st/sky-sports-f1-uhd.m3u8", 
+        lang: "ENG", 
+        status: "offline",
+        ageRestricted: false
+    },
+    { 
+        name: "CAZE TV", 
+        url: "https://dfr80qz435crc.cloudfront.net/MNOP/Amagi/Caze/Caze_TV_BR/1080p-vtt/index.m3u8", 
+        backup: "https://cdn-tt.pages.dev/ch4.m3u8", 
+        lang: "SPA", 
+        status: "online",
+        ageRestricted: false
+    }, 
+    { 
+        name: "SOMOY TV", 
+        url: "http://103.89.248.26:8082/FIFA-World-Cup-Live/tracks-a1/index.fmp4.m3u8", 
+        backup: "https://live.thebosstv.com:30443/dwlive/Somoy-TV/chunks.m3u8", 
+        lang: "BAN/ENG", 
+        status: "online",
+        ageRestricted: false
+    }, 
+    { 
+        name: "ESPN", 
+        url: "https://1nyaler.streamhostingcdn.top/stream/97/index.m3u8", 
+        backup: "https://backup-espn.m3u8", 
+        lang: "DUT", 
+        status: "offline",
+        ageRestricted: false
+    }, 
+    { 
+        name: "beIN SPORTS 1", 
+        url: "https://1nyaler.streamhostingcdn.top/stream/23/index.m3u8", 
+        backup: "https://edge22.776740.ir.cdn.ir/hls2/sport.m3u8", 
+        lang: "FRE", 
+        status: "online",
+        ageRestricted: false
+    },
+    { 
+        name: "beIN SPORTS 1 MAX", 
+        url: "https://edge22.776740.ir.cdn.ir/hls2/sport.m3u8", 
+        backup: "https://raw.githubusercontent.com/ON2026/1smas/refs/heads/main/mx1app2.m3u8", 
+        lang: "ARA", 
+        status: "offline",
+        ageRestricted: false
+    },
+    { 
+        name: "beIN SPORTS XTRA", 
+        url: "https://bein-esp-xumo.amagi.tv/playlistR1080p.m3u8", 
+        backup: "https://bein-esp-xumo.amagi.tv/playlistR1080p.m3u8", 
+        lang: "UNK", 
+        status: "online",
+        ageRestricted: false
+    },
+    { 
+        name: "DAZN SPORTS", 
+        url: "https://lb10.strmd.st/secure/RqQAGSJKynzSRgdNaTcaSVJoakOBAKew/rtmp/stream/goDobWTHeyGmXo9rNGt_Xgij7bTugZBuJeNKVupDGEMvNzXBNRTWoc1F1M3PczdezkTC0AkERmCB9QhB/1/playlist.m3u8", 
+        backup: "https://1nyaler.streamhostingcdn.top/stream/52/index.m3u8", 
+        lang: "SPA", 
+        status: "online",
+        ageRestricted: false
+    },
+    { 
+        name: "DAZN F1", 
+        url: "https://tv.topmediatv.net:25463/live/TopMediaWeb/bOteTR8ED1/374.m3u8", 
+        backup: "https://backup-daznf1.m3u8", 
+        lang: "SPA", 
+        status: "online",
+        ageRestricted: false
+    },
+    { 
+        name: "FOX SPORTS", 
+        url: "https://1nyaler.streamhostingcdn.top/stream/26/index.m3u8", 
+        backup: "https://inproviszon.st/fs14k-1.m3u8", 
+        lang: "ENG", 
+        status: "online",
+        ageRestricted: false
+    },
+    { 
+        name: "FOX", 
+        url: "https://d1jzu95oc8fgt3.cloudfront.net/FOX_Sports720p.m3u8", 
+        backup: "https://backup-fox.m3u8", 
+        lang: "ENG", 
+        status: "online",
+        ageRestricted: false
+    },
+    { 
+        name: "D SPORTS", 
+        url: "https://1nyaler.streamhostingcdn.top/stream/106/index.m3u8", 
+        backup: "https://backup-dsports.m3u8", 
+        lang: "ENG", 
+        status: "online",
+        ageRestricted: false
+    },
+    { 
+        name: "TSN 1", 
+        url: "https://pub-098b280041274cf5929f5e19cfc8ac67.r2.dev/en1/index.m3u8", 
+        backup: "https://lb14.strmd.st/secure/knqedGyKafAwaQVHthQZpjwOJuEOWHUA/rtmp/stream/DrdlDDT8cVK-oHNuShmZXRLtpskSxBlaw4Wzhf8MqB90F8tRA9uv1S-QNUayEMtRQ1SdMN9siRl84Dg/1/playlist.m3u8", 
+        lang: "ENG", 
+        status: "offline",
+        ageRestricted: false
+    },
+    { 
+        name: "WIN SPORTS", 
+        url: "https://1nyaler.streamhostingcdn.top/stream/32/index.m3u8", 
+        backup: "https://backup-winsports.m3u8", 
+        lang: "SPA", 
+        status: "online",
+        ageRestricted: false
+    },
+    { 
+        name: "SPORT TV", 
+        url: "https://1nyaler.streamhostingcdn.top/stream/33/index.m3u8", 
+        backup: "https://backup-sporttv.m3u8", 
+        lang: "SPA", 
+        status: "online",
+        ageRestricted: false
+    },
+    { 
+        name: "koora city", 
+        url: "https://am.homom.store/braz1_480/index.m3u8", 
+        backup: "https://1.simoplay.com/my-hls/h9asfma10d5.m3u8", 
+        lang: "weird lang?", 
+        status: "online",
+        ageRestricted: false
+    },
+    { 
+        name: "BRS", 
+        url: "https://fl1004.bozztv.com/ushba-mafia/tracks-v1a1/mono.m3u8", 
+        backup: "https://backup-adult.m3u8", 
+        lang: "18+", 
+        status: "online",
+        ageRestricted: true 
+    }
+];
 
+    // ===== SETTINGS: LOAD FROM LOCALSTORAGE ON START =====
+    function loadSettings() {
+        const savedRes = localStorage.getItem('unf_resolution');
+        if (savedRes) {
+            document.getElementById('resolution-select').value = savedRes;
+        }
+
+        const savedAge = localStorage.getItem('unf_age');
+        if (savedAge) {
+            document.getElementById('age-input').value = savedAge;
+        }
+    }
+
+    // ===== SETTINGS: OPEN SETTINGS OVERLAY =====
+    function openSettings() {
+        document.getElementById('menu-dropdown').style.display = 'none';
+        document.getElementById('settings-status').innerText = '';
+        document.getElementById('settings-overlay').style.display = 'flex';
+    }
+
+    // ===== SETTINGS: SAVE SETTINGS =====
+    function saveSettings() {
+        const resolution = document.getElementById('resolution-select').value;
+        const age = document.getElementById('age-input').value.trim();
+
+        if (!age) {
+            document.getElementById('settings-status').innerText = '❌ Please enter your age.';
+            document.getElementById('settings-status').style.color = 'var(--red)';
+            return;
+        }
+
+        localStorage.setItem('unf_resolution', resolution);
+        localStorage.setItem('unf_age', age);
+
+        // Rebuild the grid with the new age setting
+        const grid = document.getElementById('channel-grid');
+        grid.innerHTML = '';
+        channels.forEach((c, index) => {
+            let card = document.createElement('div');
+            const savedAge = localStorage.getItem('unf_age');
+            let isRestricted = c.ageRestricted && (!savedAge || parseInt(savedAge) < 18);
+            
+            // If restricted, DO NOT add card to grid at all
+            if (isRestricted) return;
+
+            let statusClass = c.status;
+            card.className = `card ${statusClass}`;
+
+            let statusText = c.status.toUpperCase();
+            let statusClassText = `${c.status}-text`;
+
+            card.innerHTML = `
+                <div style="font-weight:bold;">${c.name}</div>
+                <div style="font-size:0.7rem; color:#ccc;">${c.lang}</div>
+                <div class="${statusClassText}">${statusText}</div>
+            `;
+
+            card.onclick = () => {
+                if (c.status === "online" && c.url) {
+                    document.querySelectorAll('.card').forEach(el => el.classList.remove('active'));
+                    card.classList.add('active');
+                    document.getElementById('status-text').innerText = c.name;
+                    playStream(c.url, c.name);
+                }
+            };
+            grid.appendChild(card);
+        });
+
+        document.getElementById('settings-status').innerText = '✅ Settings saved!';
+        document.getElementById('settings-status').style.color = 'var(--mint)';
+
+        setTimeout(() => {
+            document.getElementById('settings-overlay').style.display = 'none';
+        }, 1500);
+    }
+
+    // ===== CHANNELS GRID GENERATION (On Load) =====
     const grid = document.getElementById('channel-grid');
-    channels.forEach(c => {
+    channels.forEach((c, index) => {
         let card = document.createElement('div');
-        card.className = `card ${c.status}`;
+        const savedAge = localStorage.getItem('unf_age');
+        let isRestricted = c.ageRestricted && (!savedAge || parseInt(savedAge) < 18);
+
+        // If restricted, DO NOT add card to grid at all
+        if (isRestricted) return;
+
+        let statusClass = c.status;
+        card.className = `card ${statusClass}`;
+
+        let statusText = c.status.toUpperCase();
+        let statusClassText = `${c.status}-text`;
+
         card.innerHTML = `
             <div style="font-weight:bold;">${c.name}</div>
             <div style="font-size:0.7rem; color:#ccc;">${c.lang}</div>
-            <div class="${c.status}-text">${c.status.toUpperCase()}</div>
+            <div class="${statusClassText}">${statusText}</div>
         `;
+
         card.onclick = () => {
             if (c.status === "online" && c.url) {
                 document.querySelectorAll('.card').forEach(el => el.classList.remove('active'));
                 card.classList.add('active');
                 document.getElementById('status-text').innerText = c.name;
-                playHls(c.url, c.name);
+                playStream(c.url, c.name);
             }
         };
         grid.appendChild(card);
@@ -634,9 +1040,9 @@
     }
 
     // ===== MOVIE SYSTEM =====
-const movieList = [
-    { name: "THE MOVIE", url: "https://www.ftpbd.net/wp-content/hls-file/Spider-Man-2002-1080p-Hindi-Dubbed-BluRay_reencoded/index.m3u8" }
-];
+    const movieList = [
+        { name: "THE MOVIE", url: "http://cinehub24.com/ftp/Movies/hollywood/2011/Johnny%20English%20Reborn%20%282011%29/Johnny%20English%20Reborn%20%282011%29.mp4" }
+    ];
 
     function playMovie() {
         document.getElementById('menu-dropdown').style.display = 'none';
@@ -644,10 +1050,9 @@ const movieList = [
             alert("🎬 No movie has been added by the admin yet. Check back later!");
             return;
         }
-        // Play the first movie in the list (or you can let users choose later)
         const movie = movieList[0];
         document.getElementById('status-text').innerText = `🎬 ${movie.name}`;
-        playHls(movie.url, movie.name);
+        playStream(movie.url, movie.name);
     }
 
     function openRequestMovie() {
@@ -656,24 +1061,27 @@ const movieList = [
     }
 
     function saveMovieRequest() {
-    const title = document.getElementById('movie-title').value.trim();
-    if (!title) return;
-
-    const email = "UNF.INT@proton.me";
-    const subject = encodeURIComponent("New Movie Request");
-    const body = encodeURIComponent("I would like to request the movie: " + title);
-    
-    window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
-    
-    document.getElementById('request-overlay').style.display = 'none';
+        const title = document.getElementById('movie-title').value.trim();
+        if (!title) return;
+        const email = "UNF.INT@proton.me";
+        const subject = encodeURIComponent("New Movie Request");
+        const body = encodeURIComponent("I would like to request the movie: " + title);
+        window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+        document.getElementById('request-overlay').style.display = 'none';
     }
     
     function reportError() {
         document.getElementById('menu-dropdown').style.display = 'none';
-        const email = 'UNF.INT@proton.me'; // 🔁 Replace with your email
+        const email = 'UNF.INT@proton.me';
         const subject = encodeURIComponent('UNF Hub - Error Report');
         const body = encodeURIComponent('Please describe the error you encountered:\n\n');
         window.open(`mailto:${email}?subject=${subject}&body=${body}`, '_blank');
+    }
+
+    // ===== CHAT FUNCTIONS =====
+    function toggleChat() {
+        const overlay = document.getElementById('chat-overlay');
+        overlay.style.display = (overlay.style.display === 'flex') ? 'none' : 'flex';
     }
 
     // Close menu when clicking outside
